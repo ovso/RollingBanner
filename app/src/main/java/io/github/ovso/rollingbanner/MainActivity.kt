@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -34,24 +32,46 @@ class MainActivity : AppCompatActivity() {
         vp2Main.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                compositeDisposable.clear()
-                var nextPosition = 0
-                when (position) {
-                    0 -> nextPosition = 1
-                    1 -> nextPosition = 2
-                    2 -> nextPosition = 0
-                }
-                compositeDisposable += Single.timer(3000, TimeUnit.MILLISECONDS).subscribeBy(
-                    onSuccess = {
-                        vp2Main.setCurrentItem(nextPosition, true)
-                    },
-                    onError = {
+            }
 
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+                if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
+                    Log.d(TAG, "DRAGGING")
+                    tvMain.text = "DRAGGING"
+                    compositeDisposable.clear()
+                } else if (state == ViewPager2.SCROLL_STATE_IDLE) {
+                    Log.d(TAG, "IDLE")
+                    tvMain.text = "IDLE"
+                    var nextPosition = 0
+                    when (vp2Main.currentItem) {
+                        0 -> nextPosition = 1
+                        1 -> nextPosition = 2
+                        2 -> nextPosition = 0
                     }
-                )
+                    compositeDisposable.clear()
+                    compositeDisposable += Single.timer(3000, TimeUnit.MILLISECONDS).subscribeBy(
+                        onSuccess = {
+                            vp2Main.setCurrentItem(nextPosition, true)
+                        },
+                        onError = {
+
+                        }
+                    )
+                }
             }
         })
+
         adapter.submitList(items)
+        compositeDisposable += Single.timer(3000, TimeUnit.MILLISECONDS).subscribeBy(
+            onSuccess = {
+                vp2Main.setCurrentItem(1, true)
+            },
+            onError = {
+
+            }
+        )
+
 /*
         compositeDisposable += Observable.interval(3000, TimeUnit.MILLISECONDS)
             .subscribeBy(
