@@ -10,11 +10,11 @@ import com.bumptech.glide.Glide
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_main_banner.view.*
 
-class BannerAdapter : ListAdapter<String, BannerViewHolder>(
-    object : DiffUtil.ItemCallback<String>() {
-        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean = oldItem == newItem
+class BannerAdapter : ListAdapter<Int, BannerViewHolder>(
+    object : DiffUtil.ItemCallback<Int>() {
+        override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean = oldItem == newItem
 
-        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean =
+        override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean =
             areItemsTheSame(oldItem, newItem)
     }
 ) {
@@ -27,7 +27,7 @@ class BannerAdapter : ListAdapter<String, BannerViewHolder>(
 
 class BannerViewHolder(override val containerView: View) :
     RecyclerView.ViewHolder(containerView), LayoutContainer {
-    fun onBindViewHolder(item: String) {
+    fun onBindViewHolder(item: Int) {
         with(itemView) {
             Glide.with(ivMainBanner).load(item).into(ivMainBanner)
         }
